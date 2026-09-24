@@ -15,7 +15,7 @@ Follow this **exact example first**. When it works, change the colors, keys, or 
 | Click a building | Building turns **gold**, water turns **blue**, grass turns **green** |
 | Click empty ground | Surroundings reset to default |
 | Press **R** | Selection clears + surroundings reset |
-| Press **B** | Toggle **day / night** (sky darkens, sun dims) |
+| Press **B** | Toggle **day / night** (sky darkens, sun hides, moon appears) |
 
 This counts as:
 - 1 modified event (`click` does more than before)
@@ -107,6 +107,8 @@ if (event.code === 'KeyB') {
 ```
 
 Save → refresh → press **B**. Sky should darken. Press **B** again for day mode.
+
+Want a **visible sun and moon** in the sky (not just dimmer light)? Follow **[EXAMPLE-add-sun-walkthrough.md](./EXAMPLE-add-sun-walkthrough.md)**.
 
 ---
 

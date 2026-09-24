@@ -18,7 +18,9 @@ Think of it like decorating a toy island and teaching it new reactions.
 Then customize it for your own submission.
 
 Want trees, birds, or a path on the island? Same Mesh recipe, different shapes → **[EXAMPLE-add-props-walkthrough.md](./EXAMPLE-add-props-walkthrough.md)**  
-Want another building? → **[EXAMPLE-add-building-walkthrough.md](./EXAMPLE-add-building-walkthrough.md)**
+Want another building? → **[EXAMPLE-add-building-walkthrough.md](./EXAMPLE-add-building-walkthrough.md)**  
+Want a visible sun / moon with **B**? → **[EXAMPLE-add-sun-walkthrough.md](./EXAMPLE-add-sun-walkthrough.md)**  
+Want a road with dashed lines? → **[EXAMPLE-add-road-walkthrough.md](./EXAMPLE-add-road-walkthrough.md)**
 
 ---
 
@@ -99,7 +101,8 @@ Choose from **Easy**, **Medium**, or **Challenge**. You may mix levels.
 
 | Idea | Event | What happens |
 |---|---|---|
-| **Day / night** | `keydown` | Press **N** to toggle sun intensity + background + fog |
+| **Day / night** | `keydown` | Press **B** or **N** to toggle sun intensity + background + fog |
+| **Visible sun / moon** | `keydown` + sprites | Day shows a sun disc; night swaps in a moon — see EXAMPLE-add-sun-walkthrough.md |
 | **Multi-select** | `click` + **Shift** | Hold Shift to keep previous buildings highlighted |
 | **Sound-free “pulse”** | `click` + animation loop | Briefly brighten building color for 300ms then settle |
 | **Empty click effect** | `click` | Clicking empty ground flashes island color, then resets |

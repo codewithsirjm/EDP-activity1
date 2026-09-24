@@ -1,77 +1,48 @@
 /*
- * main.js — Wire events to handlers + run the animation loop
+ * main.js — Wire events to handlers + run the animation loop (DEMO COMPLETE)
  *
- * ENABLE IN ORDER with events.js — uncomment matching STEP in each file.
+ * Instructor showcase: all STEP listeners + activity extras enabled.
  */
 
-/* ================================================================== STEP 0
- * Camera motion (disabled by default)
- *
- * A) Slight move on load — camera drifts once when the page opens
- * B) Continuous orbit — camera keeps moving every frame (inside animate)
- *
- * Uncomment A and/or B during discussion when you are ready.
+/* ================================================================== STEP 0A
+ * Slight camera move once on load
  * ================================================================== */
-
-/* --- STEP 0A: slight move once on load --- */
-
 window.addEventListener('load', function () {
   edpCamera.position.x = 30;
   edpCamera.position.z = 38;
   edpCamera.lookAt(0, 2, 0);
   edpRenderer.render(edpScene, edpCamera);
+  if (typeof resetHud === 'function') resetHud();
 });
 
-
-/* --- STEP 0B: continuous orbit every frame (uncomment inside animate below) --- */
-
-  const t = Date.now() * 0.00025;
-  edpCamera.position.x = 28 + Math.sin(t) * 6;
-  edpCamera.position.z = 40 + Math.cos(t) * 4;
-  edpCamera.lookAt(0, 2, 0);
-
-
-/* ================================================================== STEP 3
- * Listen: mousemove → onMouseMove
- * ================================================================== */
+/* ================================================================== STEP 3–7 + ACTIVITY listeners */
 window.addEventListener('mousemove', onMouseMove);
-
-/* ================================================================== STEP 4
- * Listen: click on canvas → onClick
- * ================================================================== */
 edpRenderer.domElement.addEventListener('click', onClick);
-
-/* ================================================================== STEP 5
- * Listen: resize → onResize
- * ================================================================== */
+edpRenderer.domElement.addEventListener('dblclick', onDoubleClick);
 window.addEventListener('resize', onResize);
-
-/* ================================================================== STEP 7
- * Listen: keydown → onKeyDown (bonus — press R to reset)
- * ================================================================== */
 window.addEventListener('keydown', onKeyDown);
 
 /*
- * Animation loop — always runs so the scene stays drawn.
- * Camera stays still until you enable STEP 0B below.
- * STEP 6: uncomment updateHover() when ready.
+ * Animation loop — orbit (STEP 0B), hover (STEP 6), bird motion (props activity)
  */
 function animate() {
   requestAnimationFrame(animate);
 
-  // updateHover();  /* STEP 6 — uncomment when updateHover is enabled in events.js */
+  updateHover();
 
-  /* STEP 0B — continuous camera orbit (uncomment the 4 lines below) */
   const t = Date.now() * 0.00025;
-  edpCamera.position.x = 28 + Math.sin(t) * 6;
-  edpCamera.position.z = 40 + Math.cos(t) * 4;
-  edpCamera.lookAt(0, 2, 0);
+  const orbitRadius = 55;   // how far from island center
+  const orbitHeight = 32;   // how high the camera sits
+  edpCamera.position.x = Math.sin(t) * orbitRadius;
+  edpCamera.position.z = Math.cos(t) * orbitRadius;
+  edpCamera.position.y = orbitHeight;
+  edpCamera.lookAt(0, 2, 0);  // keep looking at island center
+  if (typeof edpPlaceSkyBodies === 'function') edpPlaceSkyBodies();
 
-  // EXAMPLE PROPS — bird motion (uncomment after enabling makeBird in scene.js)
   if (globalThis.edpBirds) {
     edpBirds.forEach(function (bird, i) {
-      const bt = Date.now() * 0.001;
-      bird.position.x += Math.sin(bt + i) * 0.02;
+      const bt = Date.now() * 0.0005;
+      bird.position.x += Math.sin(bt + i) * 0.42;
       bird.position.y = 6 + Math.sin(bt * 2 + i) * 0.4;
       bird.rotation.y = Math.sin(bt * 0.5 + i) * 0.4;
 
@@ -82,7 +53,6 @@ function animate() {
       }
     });
   }
-  
 
   edpRenderer.render(edpScene, edpCamera);
 }

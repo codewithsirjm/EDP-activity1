@@ -29,10 +29,54 @@ renderer.shadowMap.enabled = true;
 document.body.appendChild(renderer.domElement);
 
 const sun = new THREE.DirectionalLight(0xfff0d0, 1.5);
-sun.position.set(24, 40, 20);
+sun.position.set(-65, 105, -55);
+sun.target.position.set(0, 0, 0);
 sun.castShadow = true;
 scene.add(sun);
+scene.add(sun.target);
 scene.add(new THREE.AmbientLight(0x406080, 0.55));
+
+function makeSkySprite(innerColor, outerColor, size) {
+  const canvas = document.createElement('canvas');
+  canvas.width = 128;
+  canvas.height = 128;
+  const ctx = canvas.getContext('2d');
+  const grad = ctx.createRadialGradient(64, 64, 0, 64, 64, 64);
+  grad.addColorStop(0, innerColor);
+  grad.addColorStop(0.35, outerColor);
+  grad.addColorStop(1, 'rgba(0,0,0,0)');
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, 128, 128);
+  const texture = new THREE.CanvasTexture(canvas);
+  const sprite = new THREE.Sprite(
+    new THREE.SpriteMaterial({
+      map: texture,
+      transparent: true,
+      fog: false,
+      depthTest: false,
+      depthWrite: false,
+    })
+  );
+  sprite.scale.set(size, size, 1);
+  sprite.renderOrder = 999;
+  return sprite;
+}
+
+const sunSprite = makeSkySprite('#fff4c2', '#ffb347', 10);
+scene.add(sunSprite);
+
+const moonSprite = makeSkySprite('#f1f5f9', '#94a3b8', 8);
+moonSprite.visible = false;
+scene.add(moonSprite);
+
+const skyBodyOffset = new THREE.Vector3();
+
+function placeSkyBodies() {
+  skyBodyOffset.set(-16, 19, -42);
+  skyBodyOffset.applyQuaternion(camera.quaternion);
+  sunSprite.position.copy(camera.position).add(skyBodyOffset);
+  moonSprite.position.copy(sunSprite.position);
+}
 
 /* Island size: CylinderGeometry(topRadius, bottomRadius, height, segments)
  * Bigger numbers = more room for buildings / trees / paths.
@@ -109,11 +153,11 @@ const spots = [
   { name: 'Town Hall', color: 0xe8dcc8, x: -5, z: 3, w: 4, h: 4, d: 3 },
   { name: 'Church', color: 0xd4c4a8, x: 2, z: 1, w: 3.5, h: 6, d: 3.5 },
   { name: 'Market', color: 0xc8b090, x: 6, z: 4, w: 3, h: 3, d: 4 },
-  { name: 'Pier', color: 0x8a7858, x: -3, z: -5, w: 5, h: 1.5, d: 2 },
+  { name: 'Pier', color: 0x8a7858, x: 11, z: -5, w: 5, h: 1.5, d: 2 },
   { name: 'School', color: 0xf0e8d8, x: -1, z: 6, w: 4, h: 3.5, d: 3 },
-  { name: 'Library', color: 0x32a852, x: -12, z: 12, w: 4, h: 3.5, d: 3 },
-  { name: 'Park', color: 0x32a852, x: -4, z: 15, w: 4, h: 3.5, d: 3 },
-  { name: 'Cafe', color: 0x32a852, x: 0, z: 10, w: 4, h: 3.5, d: 3 },
+  { name: 'Library', color: 0xb8c4d8, x: 4, z: -2, w: 3, h: 4, d: 3 },
+  { name: 'Cafe', color: 0xfbbf24, x: -10, z: 8, w: 3, h: 2.8, d: 3 },
+  { name: 'Clinic', color: 0x7dd3fc, x: 10, z: 6, w: 3.5, h: 3.2, d: 3 },
 ];
 
 spots.forEach((spot) => {
@@ -142,18 +186,14 @@ globalThis.edpHud = hud;
 globalThis.edpIsland = island;
 globalThis.edpWater = water;
 globalThis.edpSun = sun;
+globalThis.edpSunSprite = sunSprite;
+globalThis.edpMoonSprite = moonSprite;
+globalThis.edpPlaceSkyBodies = placeSkyBodies;
 
-/* ================================================================== EXAMPLE PROPS
+/* ================================================================== EXAMPLE PROPS (ENABLED — demo complete)
  * Trees, birds, paths — same Mesh recipe as buildings, different shapes.
- * Follow EXAMPLE-add-props-walkthrough.md
- *
- * HOW TO ENABLE:
- *   1. Uncomment the helpers block below (the section wrapped in a block comment)
- *   2. Uncomment the example makeTree / makePath / makeBird calls at the bottom
- *   3. In main.js animate(): uncomment the edpBirds.forEach motion loop
- *   4. Save → refresh → then change positions / colors to make it yours
+ * Follow EXAMPLE-add-props-walkthrough.md for the student enable path.
  * ================================================================== */
-
 
 const edpBirds = [];
 
@@ -190,6 +230,34 @@ function makePath(x, z, w, d) {
   path.receiveShadow = true;
   scene.add(path);
   return path;
+}
+
+function makeRoad(x, z, length, width, alongX) {
+  const road = new THREE.Group();
+  const asphalt = new THREE.Mesh(
+    new THREE.PlaneGeometry(width, length),
+    new THREE.MeshStandardMaterial({ color: 0x3f3f46, roughness: 1 })
+  );
+  asphalt.rotation.x = -Math.PI / 2;
+  asphalt.position.y = 0.06;
+  asphalt.receiveShadow = true;
+  road.add(asphalt);
+
+  const dashMat = new THREE.MeshStandardMaterial({ color: 0xfbbf24, roughness: 1 });
+  const gap = 2.4;
+  const dashCount = Math.max(1, Math.floor(length / gap));
+  const start = -length / 2 + gap / 2;
+  for (let i = 0; i < dashCount; i++) {
+    const dash = new THREE.Mesh(new THREE.PlaneGeometry(0.18, 1.1), dashMat);
+    dash.rotation.x = -Math.PI / 2;
+    dash.position.set(0, 0.07, start + i * gap);
+    road.add(dash);
+  }
+
+  if (alongX) road.rotation.y = Math.PI / 2;
+  road.position.set(x, 0, z);
+  scene.add(road);
+  return road;
 }
 
 function makeBird(x, y, z) {
@@ -232,11 +300,17 @@ function makeBird(x, y, z) {
 
 globalThis.edpBirds = edpBirds;
 
-// Example placements — change x/z (and bird y) after you enable the block
 makeTree(8, -3);
 makeTree(-8, 2);
+makeTree(5, 8);
+makeTree(-14, -4);
+makeTree(12, -8);
 makePath(0, -2, 4, 10);
-makeBird(-6, 6, 4);
-makeBird(3, 7, -5);
+makePath(-6, 4, 3, 8);
+makeRoad(0, 1, 24, 3.4, false);
+makeRoad(1, 2, 22, 3.2, true);
+makeBird(-6, 6, 24);
+makeBird(3, 7, -15);
+makeBird(10, 8, 2);
 
 

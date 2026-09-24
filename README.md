@@ -1,8 +1,10 @@
 # EDP Lab — Socorro Mini Map
 
-Event-driven programming lab: a small 3D island where **click**, **hover**, and **resize** events update the scene.
+Event-driven programming lab: a small 3D island where **click**, **hover**, **keys**, and **resize** update the scene.
 
-Inspired by the instructor's Socorro 3D map — simplified for PF 101.
+**This folder is the finished activity demo** (STEP 1–7 + island modifications). Open `index.html` to show students the target. Their forks still start with commented STEPs — see the walkthroughs below.
+
+Inspired by the instructor's Socorro 3D map — simplified for PF 102.
 
 ## Guided presentation
 
@@ -101,3 +103,19 @@ Quick summary:
 5. Push **2+ commits** and submit your repo link next class  
 
 **Available in code for customization:** `edpIsland`, `edpWater`, `edpSun`, `edpScene`, `edpBuildings`
+
+## My Modifications (instructor demo — activity complete)
+
+This checkout is the **finished showcase** you can open in class so students see the target island.
+
+| Change | Event / file | What you see |
+|---|---|---|
+| Gold select + water/grass shift | `click` → `highlightSurroundings` | Selected building turns gold; water & island tint |
+| Purple hover preview | `mousemove` + `updateHover` | Buildings highlight purple before click |
+| Reset selection + surroundings | `keydown` **R** | Clears gold, hover, and surroundings colors |
+| Day / night | `keydown` **B** | Darker sky/fog + dimmer sun |
+| Building details | `dblclick` | HUD shows a detail line for that building |
+| Extra buildings | `scene.js` `spots` | Library, Cafe, Clinic (distinct colors) |
+| Trees, paths, birds | `makeTree` / `makePath` / `makeBird` | Props on the grass; birds flap in the loop |
+
+Open `index.html` → try click, hover, double-click, **R**, and **B**.

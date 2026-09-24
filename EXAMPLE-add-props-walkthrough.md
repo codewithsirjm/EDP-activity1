@@ -149,6 +149,7 @@ function makePath(x, z, w, d) {
 | Dirt patch | `PlaneGeometry` | brown color, `y ≈ 0.04` |
 | Small pond | `CircleGeometry` or thin `CylinderGeometry` | blue, very short height |
 | Bridge deck | `BoxGeometry` | low `h`, long `w` or `d` |
+| **Road** (asphalt + dashes) | `makeRoad` | see **[EXAMPLE-add-road-walkthrough.md](./EXAMPLE-add-road-walkthrough.md)** |
 | Fence post | `CylinderGeometry` | thin + tall |
 
 You do **not** need new Three.js features — change numbers and colors.
